@@ -1,2 +1,4 @@
 epicov/
 data/
+*.env
+trial.py
