@@ -2,3 +2,4 @@ epicov/
 data/
 *.env
 trial.py
+*.ini
