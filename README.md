@@ -31,3 +31,15 @@ source $env_name/bin/activate
 # Install the dependencies
 uv pip install -r requirements.txt
 ```
+
+Mounting and unmounting GCloud Storage
+
+Mounting: 
+```bash
+gcsfuse $(bucket_name) "$HOME/mount-folder"
+```
+
+Unmounting:
+```bash
+fusermount -u "$HOME/mount-folder"
+```

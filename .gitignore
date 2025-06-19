@@ -3,3 +3,4 @@ data/
 *.env
 trial.py
 *.ini
+trial.ipynb
