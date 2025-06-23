@@ -1,6 +1,8 @@
 import pycountry # to standardize country names
 import difflib # to get close matches for country names
 import pycountry_convert as pc # to convert country names to ISO codes
+import re # to clean up age strings
+import pandas as pd # for DataFrame handling
 
 # For plotting
 import plotly.express as px
@@ -210,3 +212,99 @@ def get_continent(country_name: str) -> str:
         return continent_name
     except (LookupError, KeyError):
         return "Unknown"
+
+def map_age_to_group(age):
+    try:
+        # Clean input
+        if pd.isna(age) or age == 'unknown':
+            return 'unknown'
+        
+        # Convert ranges to approximate midpoints (e.g., "50-54" -> 52)
+        if '-' in age:
+            parts = age.split('-')
+            if all(part.isdigit() for part in parts): # check if both parts are numbers
+                age = str((int(parts[0]) + int(parts[1])) // 2)
+        
+        # Convert strings like ">70", ">50" to numeric estimates
+        if '>' in age:
+            num = re.findall(r'\d+', age)
+            if num:
+                age = int(num[0]) + 1  # assume ">70" means at least 71
+            else:
+                return 'unknown'  # if no number found, return unknown
+        
+        # Convert fractional or float values
+        if isinstance(age, str) and re.fullmatch(r'\d+(\.\d+)?', age):
+            age = float(age)
+        
+        # Handle months/days
+        if isinstance(age, str) and any(unit in age for unit in ['month', 'day']):
+            return '<5'
+        
+        # Final conversion to float
+        age = float(age)
+        
+        # Assign GBD group
+        if age < 5:
+            return '<5'
+        elif 5 <= age <= 14:
+            return '5-14'
+        elif 15 <= age <= 49:
+            return '15-49'
+        elif 50 <= age <= 69:
+            return '50-69'
+        elif age >= 70:
+            return '>70'
+        else:
+            return 'unknown'
+    except:
+        return 'unknown'
+
+def plot_dominant_choropleth(df,value_column, color_map, title):
+    # 1. Group by country and value_column to count entries
+    grouped = df.groupby(['country', value_column]).size().reset_index(name='count')
+
+    # 2. Pivot to wide format: one row per country, one column per age group
+    pivot_df = grouped.pivot(index='country', columns=value_column, values='count').fillna(0)
+
+    # 3. Determine the dominant (most frequent) age group for each country
+    new_col = value_column + '_dominant'
+    pivot_df[new_col] = pivot_df.idxmax(axis=1)
+    # pivot_df['total'] = pivot_df.sum(axis=1)
+
+
+    # 5. Map dominant age group to color
+    pivot_df['color'] = pivot_df[new_col].map(color_map)
+
+    # 6. Build hover text
+    hover_texts = []
+    for idx, row in pivot_df.iterrows():
+        hover_parts = [f"<b>{idx}</b>"]
+        for age_group in color_map:
+            hover_parts.append(f"{age_group}: {int(row.get(age_group, 0))}")
+        hover_texts.append("<br>".join(hover_parts))
+
+    # 7. Build choropleth
+    fig = go.Figure(data=go.Choropleth(
+        locations=pivot_df.index,
+        locationmode='country names',
+        z=[list(color_map.keys()).index(age) for age in pivot_df[new_col]],
+        text=hover_texts,
+        hoverinfo="text",
+        colorscale=[[i / (len(color_map)-1), color] for i, color in enumerate(color_map.values())],
+        colorbar=dict(
+            tickvals=list(range(len(color_map))),
+            ticktext=list(color_map.keys()),
+            title=title
+        ),
+        showscale=True
+    ))
+
+    fig.update_layout(
+        title=f"{value_column} per Country (Hover for Full Distribution)",
+        geo=dict(
+            showframe=False,
+            showcoastlines=False,
+            projection_type='natural earth'
+        )
+    )
