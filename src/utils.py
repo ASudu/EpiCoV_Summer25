@@ -57,6 +57,21 @@ def standardize_country_name(name:str) -> str:
             return name  # Return original if no close match
     return name  # Return as is if not a string
 
+def col_fillna(df, column: str, fill_value: float = -1.0) -> pd.DataFrame:
+    """Fill NaN values in a DataFrame column with a specified value.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to modify.
+        column (str): The column name to fill NaN values.
+        fill_value (float, optional): The value to use for filling NaNs. Defaults to 0.0.
+
+    Returns:
+        pd.DataFrame: The modified DataFrame with NaNs filled.
+    """
+    new_col = column + "_filled"
+    df[new_col] = df[column].fillna(fill_value)
+    return df
+
 def choropleth_world(df, value_column, color_scale="balance", title=None, hover_data=None, label=None):
     """Plot a choropleth map of the world using Plotly Express.
 
@@ -71,9 +86,6 @@ def choropleth_world(df, value_column, color_scale="balance", title=None, hover_
     col_to_plot = value_column + "_filled"
     
     hover = hover_data if hover_data else {k: True for k in df.columns}
-    
-    # Replace NaNs with a sentinel value (e.g., -1)
-    df[col_to_plot] = df[value_column].fillna(-1)
 
     fig = px.choropleth(
             df,
@@ -260,7 +272,7 @@ def map_age_to_group(age):
     except:
         return 'unknown'
 
-def plot_dominant_choropleth(df,value_column, color_map, title):
+def plot_dominant_choropleth(df,value_column, color_map, title, save_path=None):
     # 1. Group by country and value_column to count entries
     grouped = df.groupby(['country', value_column]).size().reset_index(name='count')
 
@@ -301,10 +313,23 @@ def plot_dominant_choropleth(df,value_column, color_map, title):
     ))
 
     fig.update_layout(
-        title=f"{value_column} per Country (Hover for Full Distribution)",
+        title={
+        'text': f"{title} per Country (Hover for Full Distribution)",
+        'x': 0.5,
+        'xanchor': 'center'
+        },
         geo=dict(
-            showframe=False,
-            showcoastlines=False,
-            projection_type='natural earth'
-        )
+        showframe=False,
+        showcoastlines=False,
+        projection_type='natural earth',
+        fitbounds="locations",
+        lataxis_showgrid=False,
+        lonaxis_showgrid=False
+        ),
+        margin=dict(l=0, r=0, t=40, b=0)
     )
+
+    if save_path:
+        fig.write_html(save_path)
+
+    return fig
