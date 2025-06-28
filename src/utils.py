@@ -112,7 +112,7 @@ def choropleth_world(df, value_column, color_scale="balance", title=None, hover_
 
     return fig
 
-def choropleth_continent(df, value_column, color_scale="balance", title=None, label=None, hover_data=None):
+def choropleth_continent(df, value_column, color_scale="balance", title=None, label=None, hover_data=None, YEAR="2020"):
     """Plot a choropleth map of continents using Plotly Graph Objects.
     This function creates a 2x3 grid of choropleth maps, one for each continent.
 
@@ -148,7 +148,7 @@ def choropleth_continent(df, value_column, color_scale="balance", title=None, la
     for i, (continent, geo_cfg) in enumerate(continent_configs.items()):
         row, col = row_col_map[i]
         df_cont = df[df['continent'] == continent]
-        df_cont['hover_text'] = ("Population: " + df_cont['population_2020'].map('{:,}'.format) +
+        df_cont['hover_text'] = ("Population: " + df_cont[f'population_{YEAR}'].map('{:,}'.format) +
     "<br>"+label+": " + df_cont[col_to_plot].round(2).astype(str))
 
         subplot_geo_id = "geo" if i == 0 else f"geo{i+1}"
