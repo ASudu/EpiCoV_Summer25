@@ -272,7 +272,7 @@ def map_age_to_group(age):
     except:
         return 'unknown'
 
-def plot_dominant_choropleth(df,value_column, color_map, title, save_path=None):
+def plot_dominant_choropleth(df,value_column, color_map, title, year="2020", save_path=None):
     # 1. Group by country and value_column to count entries
     grouped = df.groupby(['country', value_column]).size().reset_index(name='count')
 
@@ -314,7 +314,7 @@ def plot_dominant_choropleth(df,value_column, color_map, title, save_path=None):
 
     fig.update_layout(
         title={
-        'text': f"{title} per Country (Hover for Full Distribution)",
+        'text': f"{title} per Country (Hover for Full Distribution) | {year}",
         'x': 0.5,
         'xanchor': 'center'
         },
