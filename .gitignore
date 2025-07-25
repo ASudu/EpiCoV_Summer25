@@ -4,3 +4,4 @@ data/
 trial.py
 *.ini
 trial.ipynb
+src/lightning_logs/
