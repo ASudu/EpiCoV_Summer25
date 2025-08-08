@@ -174,11 +174,11 @@ def choropleth_world(df, value_column, color_scale="balance", title=None, hover_
         margin={"r":0,"t":40,"l":0,"b":0},
         title_x=0.5,
         width=1200,
-        font=dict(size=18),
-        title_font=dict(size=22),
-        legend_font=dict(size=16),
-        xaxis=dict(title_font=dict(size=18), tickfont=dict(size=15)),
-        yaxis=dict(title_font=dict(size=18), tickfont=dict(size=15))
+        font=dict(size=20),
+        title_font=dict(size=28),
+        legend_font=dict(size=20),
+        xaxis=dict(title_font=dict(size=20), tickfont=dict(size=18)),
+        yaxis=dict(title_font=dict(size=20), tickfont=dict(size=18))
     )
 
     # Rename colorbar title
@@ -280,11 +280,11 @@ def choropleth_continent(df, value_column, color_scale="balance", title=None, la
         margin={"r": 20, "t": 60, "l": 20, "b": 60},
         plot_bgcolor='white',
         paper_bgcolor='white',
-        font=dict(size=18),
-        title_font=dict(size=22),
-        legend_font=dict(size=16),
-        xaxis=dict(title_font=dict(size=18), tickfont=dict(size=15)),
-        yaxis=dict(title_font=dict(size=18), tickfont=dict(size=15))
+        font=dict(size=20),
+        title_font=dict(size=28),
+        legend_font=dict(size=20),
+        xaxis=dict(title_font=dict(size=20), tickfont=dict(size=18)),
+        yaxis=dict(title_font=dict(size=20), tickfont=dict(size=18))
     )
 
     return fig
@@ -344,11 +344,11 @@ def plot_dominant_choropleth(df,value_column, color_map, title, year="2020", sav
         lonaxis_showgrid=False
         ),
         margin=dict(l=0, r=0, t=40, b=0),
-        font=dict(size=18),
-        title_font=dict(size=22),
-        legend_font=dict(size=16),
-        xaxis=dict(title_font=dict(size=18), tickfont=dict(size=15)),
-        yaxis=dict(title_font=dict(size=18), tickfont=dict(size=15))
+        font=dict(size=20),
+        title_font=dict(size=28),
+        legend_font=dict(size=20),
+        xaxis=dict(title_font=dict(size=20), tickfont=dict(size=18)),
+        yaxis=dict(title_font=dict(size=20), tickfont=dict(size=18))
     )
 
     if save_path:
