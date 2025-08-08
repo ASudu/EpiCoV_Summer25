@@ -9,6 +9,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+# ------------------------------ GEOGRAPHICAL FNS ------------------------------ 
 def get_country_mapping()-> tuple:
     """Precompute a mapping of country names to their standard names and variants.
     This function creates a set of country names in lowercase and a mapping
@@ -57,6 +58,25 @@ def standardize_country_name(name:str) -> str:
             return name  # Return original if no close match
     return name  # Return as is if not a string
 
+def get_continent(country_name: str) -> str:
+    """Get the continent name for a given country name.
+    This function uses pycountry to look up the country and then converts
+    the country code to a continent name using pycountry_convert.
+    """
+    try:
+        # Normalize the country name using pycountry
+        country = pycountry.countries.lookup(country_name)
+        # Get the ISO alpha-2 country code
+        country_code = country.alpha_2
+        # Convert to continent code
+        continent_code = pc.country_alpha2_to_continent_code(country_code)
+        # Convert to full continent name
+        continent_name = pc.convert_continent_code_to_continent_name(continent_code)
+        return continent_name
+    except (LookupError, KeyError):
+        return "Unknown"
+
+# ------------------------------ DATAFRAME FNS ------------------------------
 def col_fillna(df, column: str, fill_value: float = -1.0) -> pd.DataFrame:
     """Fill NaN values in a DataFrame column with a specified value.
 
@@ -72,6 +92,54 @@ def col_fillna(df, column: str, fill_value: float = -1.0) -> pd.DataFrame:
     df[new_col] = df[column].fillna(fill_value)
     return df
 
+def map_age_to_group(age):
+    try:
+        # Clean input
+        if pd.isna(age) or age == 'unknown':
+            return 'unknown'
+        
+        # Convert ranges to approximate midpoints (e.g., "50-54" -> 52)
+        if '-' in age:
+            parts = age.split('-')
+            if all(part.isdigit() for part in parts): # check if both parts are numbers
+                age = str((int(parts[0]) + int(parts[1])) // 2)
+        
+        # Convert strings like ">70", ">50" to numeric estimates
+        if '>' in age:
+            num = re.findall(r'\d+', age)
+            if num:
+                age = int(num[0]) + 1  # assume ">70" means at least 71
+            else:
+                return 'unknown'  # if no number found, return unknown
+        
+        # Convert fractional or float values
+        if isinstance(age, str) and re.fullmatch(r'\d+(\.\d+)?', age):
+            age = float(age)
+        
+        # Handle months/days
+        if isinstance(age, str) and any(unit in age for unit in ['month', 'day']):
+            return '<5'
+        
+        # Final conversion to float
+        age = float(age)
+        
+        # Assign GBD group
+        if age < 5:
+            return '<5'
+        elif 5 <= age <= 14:
+            return '5-14'
+        elif 15 <= age <= 49:
+            return '15-49'
+        elif 50 <= age <= 69:
+            return '50-69'
+        elif age >= 70:
+            return '>70'
+        else:
+            return 'unknown'
+    except:
+        return 'unknown'
+
+# ------------------------------ PLOTTING FNS ------------------------------ 
 def choropleth_world(df, value_column, color_scale="balance", title=None, hover_data=None, label=None):
     """Plot a choropleth map of the world using Plotly Express.
 
@@ -102,7 +170,16 @@ def choropleth_world(df, value_column, color_scale="balance", title=None, hover_
         )
 
     fig.update_geos(showframe=True, showcoastlines=True)
-    fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0}, title_x=0.5, width=1200)
+    fig.update_layout(
+        margin={"r":0,"t":40,"l":0,"b":0},
+        title_x=0.5,
+        width=1200,
+        font=dict(size=18),
+        title_font=dict(size=22),
+        legend_font=dict(size=16),
+        xaxis=dict(title_font=dict(size=18), tickfont=dict(size=15)),
+        yaxis=dict(title_font=dict(size=18), tickfont=dict(size=15))
+    )
 
     # Rename colorbar title
     fig.update_coloraxes(
@@ -202,75 +279,15 @@ def choropleth_continent(df, value_column, color_scale="balance", title=None, la
         width=1200,
         margin={"r": 20, "t": 60, "l": 20, "b": 60},
         plot_bgcolor='white',
-        paper_bgcolor='white'
+        paper_bgcolor='white',
+        font=dict(size=18),
+        title_font=dict(size=22),
+        legend_font=dict(size=16),
+        xaxis=dict(title_font=dict(size=18), tickfont=dict(size=15)),
+        yaxis=dict(title_font=dict(size=18), tickfont=dict(size=15))
     )
 
     return fig
-
-def get_continent(country_name: str) -> str:
-    """Get the continent name for a given country name.
-    This function uses pycountry to look up the country and then converts
-    the country code to a continent name using pycountry_convert.
-    """
-    try:
-        # Normalize the country name using pycountry
-        country = pycountry.countries.lookup(country_name)
-        # Get the ISO alpha-2 country code
-        country_code = country.alpha_2
-        # Convert to continent code
-        continent_code = pc.country_alpha2_to_continent_code(country_code)
-        # Convert to full continent name
-        continent_name = pc.convert_continent_code_to_continent_name(continent_code)
-        return continent_name
-    except (LookupError, KeyError):
-        return "Unknown"
-
-def map_age_to_group(age):
-    try:
-        # Clean input
-        if pd.isna(age) or age == 'unknown':
-            return 'unknown'
-        
-        # Convert ranges to approximate midpoints (e.g., "50-54" -> 52)
-        if '-' in age:
-            parts = age.split('-')
-            if all(part.isdigit() for part in parts): # check if both parts are numbers
-                age = str((int(parts[0]) + int(parts[1])) // 2)
-        
-        # Convert strings like ">70", ">50" to numeric estimates
-        if '>' in age:
-            num = re.findall(r'\d+', age)
-            if num:
-                age = int(num[0]) + 1  # assume ">70" means at least 71
-            else:
-                return 'unknown'  # if no number found, return unknown
-        
-        # Convert fractional or float values
-        if isinstance(age, str) and re.fullmatch(r'\d+(\.\d+)?', age):
-            age = float(age)
-        
-        # Handle months/days
-        if isinstance(age, str) and any(unit in age for unit in ['month', 'day']):
-            return '<5'
-        
-        # Final conversion to float
-        age = float(age)
-        
-        # Assign GBD group
-        if age < 5:
-            return '<5'
-        elif 5 <= age <= 14:
-            return '5-14'
-        elif 15 <= age <= 49:
-            return '15-49'
-        elif 50 <= age <= 69:
-            return '50-69'
-        elif age >= 70:
-            return '>70'
-        else:
-            return 'unknown'
-    except:
-        return 'unknown'
 
 def plot_dominant_choropleth(df,value_column, color_map, title, year="2020", save_path=None):
     # 1. Group by country and value_column to count entries
@@ -326,7 +343,12 @@ def plot_dominant_choropleth(df,value_column, color_map, title, year="2020", sav
         lataxis_showgrid=False,
         lonaxis_showgrid=False
         ),
-        margin=dict(l=0, r=0, t=40, b=0)
+        margin=dict(l=0, r=0, t=40, b=0),
+        font=dict(size=18),
+        title_font=dict(size=22),
+        legend_font=dict(size=16),
+        xaxis=dict(title_font=dict(size=18), tickfont=dict(size=15)),
+        yaxis=dict(title_font=dict(size=18), tickfont=dict(size=15))
     )
 
     if save_path:
