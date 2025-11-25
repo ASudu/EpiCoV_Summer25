@@ -1,0 +1,247 @@
+pat_status
+Hospitalized
+Live
+unknown
+Released
+Outpatient
+Symptomatic
+Overseas inflow
+Inpatient
+Asymptomatic
+Discharged
+Deceased
+Bronchitis
+Recovered
+Hospitalized (Mild)
+Stable in quarantine
+Epidemiology Study
+EHPAD
+Hospitalized (Critical)
+Hospitalized (Severe)
+Hospitalized (Moderate)
+"Released, Live"
+Recovering
+Nasal swab
+"Pneumonia (chest X-ray), not critical"
+Hospitalized (possible MIS-C)
+Mild clinical signs without hospitalization
+Mild
+Hospitalized (Released)
+""
+Hospitalized (Stable)
+ICU; Serious
+Hospitalized (Intensive care unit)
+Pneumonia (chest X-ray)
+"Initially hospitalized, but now improved and discharged"
+Reinfection
+Hospitalized (Live)
+Not hospitalized
+live
+Moderate
+Severe
+Quarantine
+Oropharyngeal swab
+Alive
+Home
+Ambulatory
+unknow
+unkown
+Cured
+Clinic
+Hospitalized / ICU
+mild symptomatic
+Community screening
+Dead
+In-hospital
+Naso-oropharyngeal swab
+ICU
+"alive, no death no hospitalization"
+"Hospitalized, Released"
+Not Vaccinated
+Isolation
+Mild clinical signs
+Not vaccinated
+"Hospitalized, Discharged, Alive"
+Paucisymptomatic
+Lived
+Quarantined
+Asymptomatic/Mild
+"Hospitalized, Asymptomatic, Alive"
+Moderate / Outpatient
+Mild/Moderate
+Hospitalised
+Mild Symptoms
+Unknow
+"Non-hospitalized, symptomps: sore throat"
+Unknown
+No clinical signs
+"Mild symptoms (fever, cardiovascular disorders)"
+Screening
+"Hospitalized, oxygenotherapy, diarrhea"
+Asymptomatic/Released
+Intensive Care Unit
+"Asymptomatic, identified as positive during preoperation investigation"
+"Live, mild symptoms, at home"
+Mild/Contact exposure/Asymptomatic
+Death
+Severe infection
+ICD-10 Disease: Z03.8 Observation for other suspected diseases and conditions
+Contact with and exposure to other communicable diseases
+Not Hospitalized
+"Acute upper respiratory infection, unspecified"
+"ICD-10 Disease: J18.1 Lobar pneumonia, unspecified organism"
+Other acute upper respiratory infections of multiple sites
+Severe / ICU
+Hospitalized (Deceased)
+"Pneumonia, unspecified organism"
+"ICD-10 Disease: J06.9 Acute upper respiratory infection, unspecified"
+"Live, acute respiratory infection"
+"Live, physical examination"
+"ICD-10 Disease: J18.9 Pneumonia, unspecified organism"
+Acute bronchitis
+hospitalized
+casualty
+Mild / Contact exposure / Asymptomatic
+Paeds casualty
+EHPAD_IRA
+Discharged after recovery
+Aymptomatic
+Mild infection
+Hospitalizede
+DAMA
+Facility quarantine
+Suspected coronavirus infection
+Suspected Corona
+Cure
+deceased
+Non Severe
+asymptomatic
+Rebased
+Hopsitalized
+Casualty
+Chronic dialysis
+Throat
+Fever
+"moderate symptomatic, hospitalized with oxygen did not require ICU, improvement and then discharge"
+Domestic infection
+Moderate/Severe
+In-patient
+Out-patient
+"Mild, at home."
+Nanopore
+Hospitalized (Intensive care unit and Released)
+Symptoms indicative of upper respiratory infection
+"Hospitalized, Deceased"
+"Non-hospitalized, symptomps: cough"
+uknown
+inpatient
+Transfer to other facility
+outpatient
+"Live, not hospitalized"
+Confirmed SAD
+Etude
+Suspect
+Symptomatic COVID-19
+"Live, hospitalized"
+Non-hospitalized
+Cas suspect
+Asymtomatic
+Paucisymtomatic
+Oronpharyngeal swab
+Hopspitalized
+Flu-like symptoms
+Oro-pharyngeal swab
+released
+Suspected
+Contact
+Live. Not hospitalized
+Suspect/SAD/SAD/SAD
+Confirmed SCTE
+Cas contact
+RECOVERED
+Outgoing traveler
+Mild clinical signs without hospitalization. Distorted ability to smell.
+Contact-SAD
+Vaccinated
+Discharged alive
+Hospitilized
+Nursing Home
+Suspect/SAD/SAD
+Community Surveillance
+Live (moderate disease)
+Decease
+Non hospitalized
+exitus
+discharged
+Confirmed SAD-SAD
+Suspect-SAD
+45.0
+55.0
+42.0
+68.0
+51.0
+Routine general health check-up of other defined subpopulations
+Stable
+Nursing home
+"Dead, hospitalized"
+Fatal
+"Hospitalized, no clinical signs"
+Contact surveillance
+Mild Sympthoms
+Live.
+"Live, Not Hospitalized."
+Mild clinical signs without hospitalization. Distorted ability to taste
+Mild clinical signs without hospitalization. Distorted ability to smell
+Hospitlalized
+Screen
+Severe COVID-19
+non hospitalized
+16
+95
+"Active, non-sentinel-surveillance (hospital)"
+sytmptomatic
+Non Hospitalized
+not collected
+Severe; Recovered
+Asymptomatic; Recovered
+In patient
+Non-Hospitalized
+cure
+Active
+35
+75
+62
+57
+40
+82
+80
+89
+92
+76
+81
+71
+88
+90
+Asymptomatic; Deceased
+SRAG
+Sentinela
+ALive
+Paucisymptomatic; Recovered
+Severe; Deceased
+unknownn
+93
+65
+106
+97
+25
+72
+74
+87
+91
+64
+73
+0
+83
+78
+3
+Not Provided

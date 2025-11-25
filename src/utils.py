@@ -3,6 +3,7 @@ import difflib # to get close matches for country names
 import pycountry_convert as pc # to convert country names to ISO codes
 import re # to clean up age strings
 import pandas as pd # for DataFrame handling
+import numpy as np # for numerical operations
 
 # For plotting
 import plotly.express as px
@@ -138,6 +139,103 @@ def map_age_to_group(age):
             return 'unknown'
     except:
         return 'unknown'
+
+# ------------------------------ DOMAIN SPECIFIC FNS ------------------------------
+def standardize_vaccine_status(df, col="Last vaccinated"):
+    """Function to standardize vaccination status in a DataFrame column.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing the vaccination status column.
+        col (str, optional): The name of the column to standardize. Defaults to "Last vaccinated".
+
+    Returns:
+        pd.DataFrame: The DataFrame with the standardized vaccination status column.
+    """
+    vacc_map = {("not vaccinated", "non-vaccinated", "non", "unvaccinated"): "no",
+                ("unknown", "provide details if applicable", "INFLU 10/19", "Suspeito de reinfecção"): "unknown",
+                ("partially vaccinated", "partially", "yes (1st dose)", "yes (1 dose)"): "partial",
+                ("fully vaccinated", "fully", "yes (2nd dose)", "yes (2 doses)","yes (3rd dose)","yes (booster)"): "full"}
+    
+    # Use this map to standardize the 'Last vaccinated' column
+    def map_vacc_status(status):
+        if isinstance(status, str):
+            status_lower = status.strip().lower()
+            for keys, value in vacc_map.items():
+                if status_lower in keys:
+                    return value
+        return "unknown"
+    df[col] = df[col].apply(map_vacc_status)
+    return df
+
+def map_pat_status(df, df_pat, col):
+    # mapping from target df column name to column name in df_pat
+    col_map = {
+        "Clinical status": "clinical status",
+        "Hospitalization status": "hospitalized status",
+        "Severity": "severity",
+        "WHO category": "category"
+    }
+    target = col_map.get(col, col.lower())
+    if target not in df_pat.columns:
+        raise ValueError(f"Mapping column '{target}' not found in df_pat")
+    # build exact and lowercase lookup dicts
+    exact_map = df_pat.set_index("pat_stat")[target].to_dict()
+    lower_map = { (k.lower() if isinstance(k, str) else k): v for k, v in exact_map.items() if isinstance(k, str) }
+    def _map_value(x):
+        if pd.isna(x):
+            return np.nan
+        # exact match
+        if x in exact_map:
+            return exact_map[x]
+        # case-insensitive match
+        if isinstance(x, str) and x.lower() in lower_map:
+            return lower_map[x.lower()]
+        return np.nan
+    df[col] = df["Patient status"].apply(_map_value)
+    return df
+
+def inclusion_exclusion(df):
+    """
+    Counting meaningful samples based on inclusion/exclusion criteria from Ramarao-Milne (2022) (https://www.csbj.org/article/S2001-0370(22)00219-7/fulltext).
+    """
+
+    total = df.shape[0]
+    removed = 0
+
+    # Exclusion 1: Patient status annotated as ‘Unknown’
+    unknown_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith("u")]
+    u_count = df[df["Patient status"].isin(unknown_stat)].shape[0]
+    removed += u_count
+    df = df[~df["Patient status"].isin(unknown_stat)]
+    print(f"Exclusion 1: Removed {u_count} samples with 'Unknown' patient status.")
+
+    # Exclusion 2: Ambiguous annotations that cannot be associated with better or worse disease outcome including, ‘Live’, ‘Hospitalized’, ‘Outpatient’, ‘Symptomatic’, ‘Released’, ‘Ambulatory’, ‘Inpatient’, ‘other’.
+    ambiguous_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith(("li", "hos", "out", "sy", "rel", "amb", "inp","in-p", "oth"))]
+    a_count = df[df["Patient status"].isin(ambiguous_stat)].shape[0]
+    removed += a_count
+    df = df[~df["Patient status"].isin(ambiguous_stat)]
+    print(f"Exclusion 2: Removed {a_count} samples with ambiguous patient status.")
+
+    # Exclusion 3: Unannotated (missing patient status)
+    na_count = df["Patient status"].isna().sum()
+    removed += na_count
+    df = df[~df["Patient status"].isna()]
+    print(f"Exclusion 3: Removed {na_count} samples with missing patient status.")
+
+    # Inclusion 1: ‘Deceased’, ‘Severe’, ‘Critical’, ‘Dead’, ‘Post-mortem’, ‘Death’ and ‘ICU’.
+    severe_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith(("de", "se", "cr", "po", "ic"))]
+    severe_count = df[df["Patient status"].isin(severe_stat)].shape[0]
+    print(f"Inclusion 1: Included {severe_count} samples with severe patient status.")
+
+    # Inclusion 2: ‘Asymptomatic’, ‘Mild’, ‘Mild clinical signs without hospitalisation’, and ‘Recovered’
+    mild_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith(("as", "mi", "re"))]
+    mild_count = df[df["Patient status"].isin(mild_stat)].shape[0]
+    print(f"Inclusion 2: Included {mild_count} samples with mild patient status.")
+
+    df = df[df["Patient status"].isin(severe_stat + mild_stat)]
+    final_count = df.shape[0]
+    print(f"Total samples after applying inclusion/exclusion criteria: {final_count} (Removed {removed} samples out of {total})")
+    print(f"Percentage of meaningful samples: {100*final_count/total:.2f}%")
 
 # ------------------------------ PLOTTING FNS ------------------------------ 
 def choropleth_world(df, value_column, color_scale="balance", title=None, hover_data=None, label=None):

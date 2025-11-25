@@ -1,0 +1,127 @@
+Patient status,Clinical status,Hospitalization status,Severity,WHO category
+unknown,unknown,unknown,unknown,Unknown
+Recovered,recovered,no,uninfected,Uninfected
+Live,active,no,mild,Unknown
+"Initially hospitalized, but now improved and discharged",recovered,yes,uninfected,Uninfected
+Hospitalized,active,yes,moderate,Hospitalized moderate
+Released,recovered,yes,uninfected,Uninfected
+Symptomatic,active,no,mild,Ambulatory mild
+Nasal swab,suspected,no,unknown,Unknown
+Discharged,recovered,yes,uninfected,Uninfected
+Pneumonia (chest X-ray),active,yes by default,moderate,Hospitalized moderate
+Recovering,active,no,mild,Ambulatory mild
+"Pneumonia (chest X-ray), not critical",active,yes by default,moderate,Hospitalized moderate
+Hospitalized (Stable),active,yes,moderate,Hospitalized moderate
+Asymptomatic,active,no,mild,Ambulatory mild
+Deceased,dead,unknown,dead,Dead
+ICU; Serious,active,yes,severe,Hospitalized severe
+Outpatient,active,no,mild,Hospitalized moderate
+Inpatient,active,yes,moderate,Hospitalized severe
+Overseas inflow,active,no,mild,Unknown
+Hospitalized (possible MIS-C),active,yes,severe,Hospitalized moderate
+Hospitalized (Live),active,yes,moderate,Hospitalized moderate
+Hospitalized (Mild),active,yes,moderate,Hospitalized moderate
+Hospitalized (Moderate),active,yes,moderate,Hospitalized moderate
+Mild,active,no,mild,Ambulatory mild
+"Released, Live",recovered,yes,uninfected,Uninfected
+live,active,no,mild,Unknown
+Hospitalized (Severe),active,yes,severe,Hospitalized severe
+Not hospitalized,active,no,mild,Ambulatory mild
+Hospitalized (Released),recovered,yes,uninfected,Uninfected
+Severe,active,usually yes,severe,Hospitalized severe
+Moderate,active,no,mild,Ambulatory mild
+Hospitalized (Intensive care unit),active,yes,severe,Hospitalized severe
+Epidemiology Study,unknown,no,unknown,Unknown
+EHPAD,active,usually yes - requires higher level of care,severe,Hospitalized severe
+Hospitalized (Critical),active,yes,severe,Hospitalized severe
+Bronchitis,active,ususally no,mild,Unknown
+Reinfection,active,no,mild,Ambulatory mild
+Stable in quarantine,active,no,mild,Ambulatory mild
+Mild clinical signs without hospitalization,active,no,mild,Ambulatory mild
+Unknow,unknown,unknown,unknown,Unknown
+"Hospitalized, oxygenotherapy, diarrhea",active,yes,moderate,Hospitalized moderate
+Asymptomatic/Released,recovered,yes,uninfected,Uninfected
+Oropharyngeal swab,suspected,no,unknown,Unknown
+unknow,unknown,unknown,unknown,Unknown
+Intensive Care Unit,active,yes,severe,Hospitalized severe
+No clinical signs,active,no,mild,Ambulatory mild
+Screening,suspected,no,unknown,Unknown
+Quarantine,active,no,mild,Ambulatory mild
+"Mild symptoms (fever, cardiovascular disorders)",active,no,mild,Ambulatory mild
+Unknown,unknown,unknown,unknown,Unknown
+Ambulatory,active,no,mild,Ambulatory mild
+Moderate / Outpatient,active,no,mild,Hospitalized moderate
+"Live, mild symptoms, at home",active,no,mild,Ambulatory mild
+Death,dead,unknown,dead,Dead
+"Hospitalized, Released",recovered,yes,uninfected,Uninfected
+Mild/Contact exposure/Asymptomatic,active,no,mild,Ambulatory mild
+Alive,active,no,mild,Unknown
+Severe infection,active,usually yes,likely severe?,Hospitalized severe
+Home,active,no,mild,Unknown
+"Asymptomatic, identified as positive during preoperation investigation",active,no,mild,Ambulatory mild
+Severe / ICU,active,yes,severe,Hospitalized severe
+Suspected Corona,suspected,no,unknown - need +RNA to confirm,Ambulatory mild
+"Mild, at home.",active,no,mild,Ambulatory mild
+Hospitalized (Deceased),dead,yes,dead,Dead
+Lived,recovered?,no,uninfected,Uninfected
+Mild clinical signs,active,no,mild,Ambulatory mild
+unkown,unknown,unknown,unknown,Unknown
+Mild infection,active,no,mild,Ambulatory mild
+Symptoms indicative of upper respiratory infection,active,no,mild,Ambulatory mild
+Not Hospitalized,active,no,mild,Ambulatory mild
+hospitalized,active,yes,moderate,Hospitalized severe
+Not Vaccinated,unknown,no,unknown,Unknown
+Not vaccinated,unknown,no,unknown,Unknown
+Paucisymptomatic,active,no,mild,Ambulatory mild
+Naso-oropharyngeal swab,suspected,no,unknown,Unknown
+Quarantined,active,no,mild,Ambulatory mild
+Hospitalised,active,yes,moderate,Hospitalized severe
+deceased,dead,unknown,dead,Dead
+Dead,dead,unknown,dead,Dead
+Cure,recovered,no,uninfected,Uninfected
+asymptomatic,active,no,mild,Ambulatory mild
+"Live, hospitalized",active,yes,moderate,Hospitalized moderate
+"Live, not hospitalized",active,no,mild,Ambulatory mild
+inpatient,active,yes,moderate,Hospitalized severe
+Suspect,suspected,no,unknown - need +RNA to confirm,Ambulatory mild
+Etude,unknown,no,unknown,Unknown
+Confirmed SAD,active,no,mild,Ambulatory mild
+Non-hospitalized,active,no,mild,Ambulatory mild
+Cas suspect,suspected,no,unknown - still need +RNA,Ambulatory mild
+Symptomatic COVID-19,active,no,mild,Ambulatory mild
+uknown,unknown,unknown,unknown,Unknown
+outpatient,active,no,mild,Hospitalized moderate
+Transfer to other facility,active,usually yes,likely severe?,Hospitalized severe
+Mild clinical signs without hospitalization. Distorted ability to taste,active,no,mild,Ambulatory mild
+Mild clinical signs without hospitalization. Distorted ability to smell,active,no,mild,Ambulatory mild
+Cas contact,suspected,no,unknown - need to confirme with  +RNA,Ambulatory mild
+Oronpharyngeal swab,suspected,no,unknown,Unknown
+Contact,suspected,no,unknown,Ambulatory mild
+Live. Not hospitalized,active,no,mild,Ambulatory mild
+Confirmed SCTE,active,no,mild,-
+Suspect/SAD/SAD/SAD,active,no,mild,Ambulatory mild
+Asymtomatic,active,no,mild,Ambulatory mild
+Severe COVID-19,active,usually yes,severe,Ambulatory mild
+Screen,suspected,no,unknown,Unknown
+Paucisymtomatic,active,no,mild,Ambulatory mild
+released,recovered,yes,uninfected,Uninfected
+Live.,active,no,mild,Unknown
+Mild Sympthoms,active,no,mild,Ambulatory mild
+"Hospitalized, no clinical signs",active,yes,moderate,Hospitalized moderate
+Contact surveillance,suspected,no,unknown,Ambulatory mild
+Suspect-SAD,active,no,mild,Ambulatory mild
+RECOVERED,recovered,no,uninfected,Uninfected
+Non hospitalized,active,no,mild,Ambulatory mild
+discharged,recovered,yes,uninfected,Uninfected
+Asymptomatic; Recovered,recovered,no,uninfected,Uninfected
+non hospitalized,active,no,mild,Ambulatory mild
+Severe; Recovered,recovered,yes,uninfected,Unknown
+not collected,unknown,no,unknown,Unknown
+In patient,active,yes,moderate,Hospitalized severe
+SRAG,active,yes,severe,-
+Sentinela,suspected,no,unknown - need that +RNA,Ambulatory mild
+Asymptomatic; Deceased,dead,no,dead,Dead
+Non Hospitalized,active,no,mild,Ambulatory mild
+cure,recovered,no,uninfected,Uninfected
+Non-Hospitalized,active,no,mild,Ambulatory mild
+ALive,active,no,mild,Unknown

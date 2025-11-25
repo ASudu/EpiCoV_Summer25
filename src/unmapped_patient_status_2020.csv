@@ -1,0 +1,53 @@
+pat_stat
+"Live, acute respiratory infection"
+Contact with and exposure to other communicable diseases
+"Acute upper respiratory infection, unspecified"
+"ICD-10 Disease: J06.9 Acute upper respiratory infection, unspecified"
+Other acute upper respiratory infections of multiple sites
+"ICD-10 Disease: J18.1 Lobar pneumonia, unspecified organism"
+"Live, physical examination"
+"Pneumonia, unspecified organism"
+"ICD-10 Disease: J18.9 Pneumonia, unspecified organism"
+ICD-10 Disease: Z03.8 Observation for other suspected diseases and conditions
+Acute bronchitis
+EHPAD_IRA
+Discharged after recovery
+Aymptomatic
+"alive, no death no hospitalization"
+"moderate symptomatic, hospitalized with oxygen did not require ICU, improvement and then discharge"
+Mild / Contact exposure / Asymptomatic
+Fever
+mild symptomatic
+"Hospitalized, Discharged, Alive"
+Isolation
+Nanopore
+Hospitalized (Intensive care unit and Released)
+"Hospitalized, Deceased"
+In-hospital
+Community screening
+Paeds casualty
+Clinic
+casualty
+"Hospitalized, Asymptomatic, Alive"
+Asymptomatic/Mild
+Cured
+ICU
+Throat
+Hospitalized / ICU
+Suspected coronavirus infection
+Casualty
+Hopsitalized
+Non Severe
+Chronic dialysis
+Rebased
+Mild Symptoms
+Mild/Moderate
+"Non-hospitalized, symptomps: sore throat"
+Hospitalizede
+Facility quarantine
+DAMA
+Moderate/Severe
+Domestic infection
+Out-patient
+In-patient
+"Non-hospitalized, symptomps: cough"
