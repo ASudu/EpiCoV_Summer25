@@ -170,12 +170,12 @@ def standardize_vaccine_status(df, col="Last vaccinated"):
 def map_pat_status(df, df_pat, col):
     # mapping from target df column name to column name in df_pat
     col_map = {
-        "Clinical status": "clinical status",
-        "Hospitalization status": "hospitalized status",
-        "Severity": "severity",
-        "WHO category": "category"
+        "clinical_status":"clinical status",
+        "hospitalization_status": "hospitalized status",
+        "severity": "severity",
+        "who_category": "category"
     }
-    target = col_map.get(col, col.lower())
+    target = col_map.get(col, col.replace("_", " ").title())
     if target not in df_pat.columns:
         raise ValueError(f"Mapping column '{target}' not found in df_pat")
     # build exact and lowercase lookup dicts
