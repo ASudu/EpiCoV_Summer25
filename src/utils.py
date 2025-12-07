@@ -94,32 +94,43 @@ def col_fillna(df, column: str, fill_value: float = -1.0) -> pd.DataFrame:
     return df
 
 def map_age_to_group(age):
-    try:
-        # Clean input
-        if pd.isna(age) or age == 'unknown':
-            return 'unknown'
-        
-        # Convert ranges to approximate midpoints (e.g., "50-54" -> 52)
-        if '-' in age:
-            parts = age.split('-')
-            if all(part.isdigit() for part in parts): # check if both parts are numbers
-                age = str((int(parts[0]) + int(parts[1])) // 2)
-        
-        # Convert strings like ">70", ">50" to numeric estimates
-        if '>' in age:
-            num = re.findall(r'\d+', age)
-            if num:
-                age = int(num[0]) + 1  # assume ">70" means at least 71
-            else:
-                return 'unknown'  # if no number found, return unknown
-        
-        # Convert fractional or float values
-        if isinstance(age, str) and re.fullmatch(r'\d+(\.\d+)?', age):
-            age = float(age)
-        
-        # Handle months/days
-        if isinstance(age, str) and any(unit in age for unit in ['month', 'day']):
-            return '<5'
+    try:        
+        # Handle string inputs
+        if isinstance(age, str):
+            age = age.strip().lower()
+            # Clean input
+            if pd.isna(age) or age == 'unknown':
+                return 'unknown'
+            
+            # Convert ranges to approximate midpoints (e.g., "50-54" -> 52)
+            if '-' in age:
+                parts = [x.strip() for x in age.split('-')]
+                if all(part.isdigit() for part in parts): # check if both parts are numbers
+                    age = str((int(parts[0]) + int(parts[1])) // 2)
+            
+            # Convert ranges with 'to' to approximate midpoints (e.g., "50 to 54" -> 52)
+            if 'to' in age:
+                parts = [x.strip() for x in age.split('to')]
+                if all(part.isdigit() for part in parts): # check if both parts are numbers
+                    age = str((int(parts[0]) + int(parts[1])) // 2)
+            
+            # Convert strings like ">70", ">50" to numeric estimates
+            if '>' in age:
+                num = re.findall(r'\d+', age)
+                if num:
+                    age = int(num[0]) + 1  # assume ">70" means at least 71
+                else:
+                    print('> in age but no number found')
+                    return 'unknown'  # if no number found, return unknown
+            
+            # Convert fractional or float values
+            if isinstance(age, str) and re.fullmatch(r'\d+(\.\d+)?', age):
+                age = float(age)
+            
+            # Handle months/days
+            if isinstance(age, str) and any(unit in age for unit in ['month', 'day']):
+                print('age in months or days')
+                return '<5'
         
         # Final conversion to float
         age = float(age)
@@ -175,11 +186,12 @@ def map_pat_status(df, df_pat, col):
         "severity": "severity",
         "who_category": "category"
     }
-    target = col_map.get(col, col.replace("_", " ").title())
+    # target = col_map.get(col.lower().replace(" ", "_"), col.lower().replace("_", " "))
+    target = col
     if target not in df_pat.columns:
         raise ValueError(f"Mapping column '{target}' not found in df_pat")
     # build exact and lowercase lookup dicts
-    exact_map = df_pat.set_index("pat_stat")[target].to_dict()
+    exact_map = df_pat.set_index("patient_status")[target].to_dict()
     lower_map = { (k.lower() if isinstance(k, str) else k): v for k, v in exact_map.items() if isinstance(k, str) }
     def _map_value(x):
         if pd.isna(x):
@@ -273,7 +285,7 @@ def choropleth_world(df, value_column, color_scale="balance", title=None, hover_
         title_x=0.5,
         width=1200,
         font=dict(size=20),
-        title_font=dict(size=28),
+        title_font=dict(size=25),
         legend_font=dict(size=20),
         xaxis=dict(title_font=dict(size=20), tickfont=dict(size=18)),
         yaxis=dict(title_font=dict(size=20), tickfont=dict(size=18))
@@ -379,7 +391,7 @@ def choropleth_continent(df, value_column, color_scale="balance", title=None, la
         plot_bgcolor='white',
         paper_bgcolor='white',
         font=dict(size=20),
-        title_font=dict(size=28),
+        title_font=dict(size=25),
         legend_font=dict(size=20),
         xaxis=dict(title_font=dict(size=20), tickfont=dict(size=18)),
         yaxis=dict(title_font=dict(size=20), tickfont=dict(size=18))
