@@ -36,7 +36,7 @@ Mounting and unmounting GCloud Storage
 
 Mounting: 
 ```bash
-gcsfuse $(bucket_name) "$HOME/mount-folder"
+gcsfuse --implicit-dirs $(bucket_name) "$HOME/mount-folder"
 ```
 
 Unmounting:
