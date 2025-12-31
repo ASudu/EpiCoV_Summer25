@@ -182,7 +182,7 @@ def map_pat_status(df, df_pat, col):
     # mapping from target df column name to column name in df_pat
     col_map = {
         "clinical_status":"clinical status",
-        "hospitalization_status": "hospitalized status",
+        "hospital_status": "hospital status",
         "severity": "severity",
         "who_category": "category"
     }
