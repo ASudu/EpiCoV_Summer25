@@ -4,6 +4,7 @@ import pycountry_convert as pc # to convert country names to ISO codes
 import re # to clean up age strings
 import pandas as pd # for DataFrame handling
 import numpy as np # for numerical operations
+import matplotlib.pyplot as plt  # For plotting histograms
 
 # For plotting
 import plotly.express as px
@@ -249,7 +250,76 @@ def inclusion_exclusion(df):
     print(f"Total samples after applying inclusion/exclusion criteria: {final_count} (Removed {removed} samples out of {total})")
     print(f"Percentage of meaningful samples: {100*final_count/total:.2f}%")
 
-# ------------------------------ PLOTTING FNS ------------------------------ 
+# ------------------------------ PLOTTING FNS ------------------------------
+def plot_hist(df, col, n_bins=15, order=None, sort_by_counts=False):
+    """
+    Plots a histogram (for numeric columns) or a bar chart (for categorical columns).
+    Allows forcing a custom ordering of categorical bars via `order` or sorting by counts.
+    Args:
+        df (pd.DataFrame): input DataFrame
+        col (str): column to plot
+        n_bins (int): bins for numeric histogram (ignored for categorical)
+        order (list[str]|None): explicit category order for categorical plots
+        sort_by_counts (bool): if True, order categories by descending frequency
+    """
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    s = df[col].dropna()
+
+    plt.figure(figsize=(10, 6))
+
+    # If numeric, fallback to histogram
+    if pd.api.types.is_numeric_dtype(s):
+        counts, bins, patches = plt.hist(
+            s,
+            bins=n_bins,
+            edgecolor='black',
+            color='skyblue'
+        )
+        # annotate
+        for p in patches:
+            h = p.get_height()
+            if h > 0:
+                plt.text(p.get_x() + p.get_width() / 2, h + max(counts) * 0.01, f'{int(h)}',
+                         ha='center', va='bottom', fontsize=9)
+        plt.title(f'Frequency Distribution of {col}', fontsize=14)
+        plt.xlabel(col, fontsize=12)
+        plt.ylabel('Frequency (Count)', fontsize=12)
+        plt.grid(axis='y', alpha=0.5)
+        plt.tight_layout()
+        plt.show()
+        return
+
+    # Categorical branch
+    # determine category order
+    if order is not None:
+        cats = list(order)
+    elif sort_by_counts:
+        cats = s.value_counts().index.tolist()
+    else:
+        # preserve first-seen order
+        cats = pd.unique(s).tolist()
+
+    counts = s.value_counts().reindex(cats, fill_value=0)
+
+    x = np.arange(len(cats))
+    bars = plt.bar(x, counts.values, color='skyblue', edgecolor='black')
+    # annotate bar labels
+    for i, v in enumerate(counts.values):
+        if v > 0:
+            plt.text(i, v + max(counts.values) * 0.01, f'{int(v)}', ha='center', va='bottom', fontsize=9)
+
+    plt.xticks(x, cats, rotation=45, ha='right')
+    plt.title(f'Frequency Distribution of {col}', fontsize=14)
+    plt.xlabel(col, fontsize=12)
+    plt.ylabel('Frequency (Count)', fontsize=12)
+    plt.grid(axis='y', alpha=0.5)
+    plt.tight_layout()
+    plt.show()
+    plt.close()
+
 def choropleth_world(df, value_column, color_scale="balance", title=None, hover_data=None, label=None):
     """Plot a choropleth map of the world using Plotly Express.
 
