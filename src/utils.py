@@ -207,49 +207,63 @@ def map_pat_status(df, df_pat, col):
     df[col] = df["Patient status"].apply(_map_value)
     return df
 
-def inclusion_exclusion(df):
+def inclusion_exclusion(df, yr=2020, verbose=True):
     """
     Counting meaningful samples based on inclusion/exclusion criteria from Ramarao-Milne (2022) (https://www.csbj.org/article/S2001-0370(22)00219-7/fulltext).
     """
 
     total = df.shape[0]
     removed = 0
+    data_split = {"year": yr, "total": total}
 
     # Exclusion 1: Patient status annotated as ‘Unknown’
     unknown_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith("u")]
     u_count = df[df["Patient status"].isin(unknown_stat)].shape[0]
     removed += u_count
     df = df[~df["Patient status"].isin(unknown_stat)]
-    print(f"Exclusion 1: Removed {u_count} samples with 'Unknown' patient status.")
+    if verbose:
+        print(f"Exclusion 1: Removed {u_count} samples with 'Unknown' patient status.")
+    data_split['excl_unknown_patient_status'] = u_count
 
     # Exclusion 2: Ambiguous annotations that cannot be associated with better or worse disease outcome including, ‘Live’, ‘Hospitalized’, ‘Outpatient’, ‘Symptomatic’, ‘Released’, ‘Ambulatory’, ‘Inpatient’, ‘other’.
     ambiguous_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith(("li", "hos", "out", "sy", "rel", "amb", "inp","in-p", "oth"))]
     a_count = df[df["Patient status"].isin(ambiguous_stat)].shape[0]
     removed += a_count
     df = df[~df["Patient status"].isin(ambiguous_stat)]
-    print(f"Exclusion 2: Removed {a_count} samples with ambiguous patient status.")
+    if verbose:
+        print(f"Exclusion 2: Removed {a_count} samples with ambiguous patient status.")
+    data_split['excl_ambiguous_patient_status'] = a_count
 
     # Exclusion 3: Unannotated (missing patient status)
     na_count = df["Patient status"].isna().sum()
     removed += na_count
     df = df[~df["Patient status"].isna()]
-    print(f"Exclusion 3: Removed {na_count} samples with missing patient status.")
+    if verbose:
+        print(f"Exclusion 3: Removed {na_count} samples with missing patient status.")
+    data_split['excl_missing_patient_status'] = na_count
 
     # Inclusion 1: ‘Deceased’, ‘Severe’, ‘Critical’, ‘Dead’, ‘Post-mortem’, ‘Death’ and ‘ICU’.
     severe_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith(("de", "se", "cr", "po", "ic"))]
     severe_count = df[df["Patient status"].isin(severe_stat)].shape[0]
-    print(f"Inclusion 1: Included {severe_count} samples with severe patient status.")
+    if verbose:
+        print(f"Inclusion 1: Included {severe_count} samples with severe patient status.")
+    data_split['incl_affected_patient_count'] = severe_count
 
     # Inclusion 2: ‘Asymptomatic’, ‘Mild’, ‘Mild clinical signs without hospitalisation’, and ‘Recovered’
     mild_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith(("as", "mi", "re"))]
     mild_count = df[df["Patient status"].isin(mild_stat)].shape[0]
-    print(f"Inclusion 2: Included {mild_count} samples with mild patient status.")
+    if verbose:
+        print(f"Inclusion 2: Included {mild_count} samples with mild patient status.")
+    data_split['incl_control_patient_count'] = mild_count
 
     df = df[df["Patient status"].isin(severe_stat + mild_stat)]
     final_count = df.shape[0]
-    print(f"Total samples after applying inclusion/exclusion criteria: {final_count} (Removed {removed} samples out of {total})")
-    print(f"Percentage of meaningful samples: {100*final_count/total:.2f}%")
-
+    data_split['final_count'] = final_count
+    
+    if verbose:
+        print(f"Total samples after applying inclusion/exclusion criteria: {final_count} (Removed {removed} samples out of {total})")
+        print(f"Percentage of meaningful samples: {100*final_count/total:.2f}%")
+    return df, data_split
 # ------------------------------ PLOTTING FNS ------------------------------
 def plot_hist(df, col, n_bins=15, order=None, sort_by_counts=False):
     """
@@ -319,6 +333,100 @@ def plot_hist(df, col, n_bins=15, order=None, sort_by_counts=False):
     plt.tight_layout()
     plt.show()
     plt.close()
+
+def plot_data_splits(data:dict, title:str, savepath=None):
+    """
+    Plots a pie chart with bent arrows and places percentage next to each annotation
+    (instead of on the wedge). Accepts either:
+      - mapping-like dict (e.g. {'unknown': 10, 'other': 5, 'total': ...})
+      - dict with 'category' and 'counts' lists (e.g. {'category': [...], 'counts': [...]})
+    """
+    # Normalize input
+    if isinstance(data, dict) and "category" in data and "counts" in data:
+        categories = list(data["category"])
+        counts = list(data["counts"])
+
+        # Remove 'total' if present
+        if "total" in categories:
+            total_index = categories.index("total")
+            categories.pop(total_index)
+            counts.pop(total_index)
+        
+        # Remove zero-count categories
+        clean_data = [(k, v) for k, v in zip(categories, counts) if v > 0]
+        if len(clean_data):
+            categories, counts = zip(*clean_data)
+    else:
+        clean_data = {k: v for k, v in data.items() if k != "total" and v > 0}
+        categories = list(clean_data.keys())
+        counts = list(clean_data.values())
+
+    total = float(np.sum(counts)) if len(counts) else 0.0
+
+    fig, ax = plt.subplots(figsize=(10, 7), subplot_kw=dict(aspect="equal"))
+
+    # draw pie without labels (we place labels manually)
+    colors = plt.cm.Set1(np.linspace(0, 1, max(1, len(categories))))
+    wedges, texts = ax.pie(
+        counts,
+        startangle=140,
+        labels=[None] * len(categories),
+        colors=colors
+    )
+
+    # compute initial label anchor points based on slice angle
+    label_items = []
+    radius_text = 1.35
+    for i, w in enumerate(wedges):
+        ang = (w.theta2 - w.theta1) / 2.0 + w.theta1
+        x = np.cos(np.deg2rad(ang))
+        y = np.sin(np.deg2rad(ang))
+        side = "right" if x >= 0 else "left"
+        xt = np.sign(x) * radius_text
+        yt = y * radius_text
+        label_items.append({"i": i, "ang": ang, "x": x, "y": y, "side": side, "xt": xt, "yt": yt})
+
+    # collision avoidance: adjust y positions per side to enforce a minimum vertical gap
+    min_gap = 0.12
+    y_min, y_max = -1.2, 1.2
+    for side in ("right", "left"):
+        items = [it for it in label_items if it["side"] == side]
+        items.sort(key=lambda it: it["yt"], reverse=True)
+        for j in range(1, len(items)):
+            prev = items[j - 1]
+            cur = items[j]
+            if prev["yt"] - cur["yt"] < min_gap:
+                cur["yt"] = prev["yt"] - min_gap
+        for it in items:
+            it["yt"] = max(min(it["yt"], y_max), y_min)
+        items.sort(key=lambda it: it["yt"])
+        for j in range(1, len(items)):
+            prev = items[j - 1]
+            cur = items[j]
+            if cur["yt"] - prev["yt"] < min_gap:
+                cur["yt"] = prev["yt"] + min_gap
+        for it in items:
+            it["yt"] = max(min(it["yt"], y_max), y_min)
+
+    # draw annotations with bent arrows connecting slice edge to adjusted label positions
+    for it in label_items:
+        i, ang, x, y = it["i"], it["ang"], it["x"], it["y"]
+        xt, yt = it["xt"], it["yt"]
+        ha = "left" if it["side"] == "right" else "right"
+        connectionstyle = f"angle,angleA=0,angleB={ang}"
+        kw = dict(arrowprops=dict(arrowstyle="-", connectionstyle=connectionstyle), zorder=0, va="center")
+        pct = (counts[i] / total * 100) if total > 0 else 0.0
+        label_text = f"{categories[i]} ({pct:1.2f}%)"
+        ax.annotate(label_text, xy=(x, y), xytext=(xt, yt), horizontalalignment=ha, **kw)
+
+    ax.set_title(title, fontsize=14)
+    plt.tight_layout()
+
+    # optional save
+    if savepath:
+        fig.savefig(savepath, bbox_inches="tight", dpi=300)
+
+    plt.show()
 
 def choropleth_world(df, value_column, color_scale="balance", title=None, hover_data=None, label=None):
     """Plot a choropleth map of the world using Plotly Express.
