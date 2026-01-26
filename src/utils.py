@@ -215,21 +215,27 @@ def inclusion_exclusion(df, yr=2020, verbose=True):
     total = df.shape[0]
     removed = 0
     data_split = {"year": yr, "total": total}
+    df1 = df.copy()
+    df1["inc_exc_category"] = "NA"
 
     # Exclusion 1: Patient status annotated as ‘Unknown’
-    unknown_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith("u")]
+    unknown_stat = set([x for x in df["Patient status"].unique() if str(x).lower().startswith("u")])
     u_count = df[df["Patient status"].isin(unknown_stat)].shape[0]
     removed += u_count
-    df = df[~df["Patient status"].isin(unknown_stat)]
+    # df = df[~df["Patient status"].isin(unknown_stat)]
+    mask = df1["Patient status"].isin(unknown_stat)
+    df1.loc[mask, "inc_exc_category"] = "unknown_pat_stat"
     if verbose:
         print(f"Exclusion 1: Removed {u_count} samples with 'Unknown' patient status.")
     data_split['excl_unknown_patient_status'] = u_count
 
     # Exclusion 2: Ambiguous annotations that cannot be associated with better or worse disease outcome including, ‘Live’, ‘Hospitalized’, ‘Outpatient’, ‘Symptomatic’, ‘Released’, ‘Ambulatory’, ‘Inpatient’, ‘other’.
-    ambiguous_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith(("li", "hos", "out", "sy", "rel", "amb", "inp","in-p", "oth"))]
+    ambiguous_stat = set([x for x in df["Patient status"].unique() if str(x).lower().startswith(("li", "hos", "out", "sy", "rel", "amb", "inp","in-p", "oth"))])
     a_count = df[df["Patient status"].isin(ambiguous_stat)].shape[0]
     removed += a_count
-    df = df[~df["Patient status"].isin(ambiguous_stat)]
+    # df = df[~df["Patient status"].isin(ambiguous_stat)]
+    mask = df1["Patient status"].isin(ambiguous_stat)
+    df1.loc[mask, "inc_exc_category"] = "ambiguous_pat_stat"
     if verbose:
         print(f"Exclusion 2: Removed {a_count} samples with ambiguous patient status.")
     data_split['excl_ambiguous_patient_status'] = a_count
@@ -237,33 +243,39 @@ def inclusion_exclusion(df, yr=2020, verbose=True):
     # Exclusion 3: Unannotated (missing patient status)
     na_count = df["Patient status"].isna().sum()
     removed += na_count
-    df = df[~df["Patient status"].isna()]
+    # df = df[~df["Patient status"].isna()]
+    mask = df1["Patient status"].isna()
+    df1.loc[mask, "inc_exc_category"] = "missing_pat_stat"
     if verbose:
         print(f"Exclusion 3: Removed {na_count} samples with missing patient status.")
     data_split['excl_missing_patient_status'] = na_count
 
     # Inclusion 1: ‘Deceased’, ‘Severe’, ‘Critical’, ‘Dead’, ‘Post-mortem’, ‘Death’ and ‘ICU’.
-    severe_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith(("de", "se", "cr", "po", "ic"))]
+    severe_stat = set([x for x in df["Patient status"].unique() if str(x).lower().startswith(("de", "se", "cr", "po", "ic"))])
     severe_count = df[df["Patient status"].isin(severe_stat)].shape[0]
     if verbose:
         print(f"Inclusion 1: Included {severe_count} samples with severe patient status.")
     data_split['incl_affected_patient_count'] = severe_count
+    mask = df1["Patient status"].isin(severe_stat)
+    df1.loc[mask, "inc_exc_category"] = "severe_pat_stat"
 
     # Inclusion 2: ‘Asymptomatic’, ‘Mild’, ‘Mild clinical signs without hospitalisation’, and ‘Recovered’
-    mild_stat = [x for x in df["Patient status"].unique() if str(x).lower().startswith(("as", "mi", "re"))]
+    mild_stat = set([x for x in df["Patient status"].unique() if str(x).lower().startswith(("as", "mi", "re"))]) - ambiguous_stat
     mild_count = df[df["Patient status"].isin(mild_stat)].shape[0]
     if verbose:
         print(f"Inclusion 2: Included {mild_count} samples with mild patient status.")
     data_split['incl_control_patient_count'] = mild_count
+    mask = df1["Patient status"].isin(mild_stat)
+    df1.loc[mask, "inc_exc_category"] = "mild_pat_stat"
 
-    df = df[df["Patient status"].isin(severe_stat + mild_stat)]
+    df = df[df["Patient status"].isin(severe_stat.union(mild_stat))]
     final_count = df.shape[0]
     data_split['final_count'] = final_count
     
     if verbose:
         print(f"Total samples after applying inclusion/exclusion criteria: {final_count} (Removed {removed} samples out of {total})")
         print(f"Percentage of meaningful samples: {100*final_count/total:.2f}%")
-    return df, data_split
+    return df1, data_split
 # ------------------------------ PLOTTING FNS ------------------------------
 def plot_hist(df, col, n_bins=15, order=None, sort_by_counts=False):
     """
